@@ -2,8 +2,8 @@
 
 This is a simple downloading application suitable for downloading videos from Instagram.
 
-Download video✅
-Download Image ❌
+- Download video✅
+- Download Image ❌
 
 I haven’t figured out how to download pictures yet😓, maybe there is a bug in the app.
 
@@ -19,8 +19,8 @@ I haven’t figured out how to download pictures yet😓, maybe there is a bug i
 
 这是一个简单的下载应用程序，适合从 Instagram 下载视频。
 
-下载视频✅
-下载图片❌
+- 下载视频✅
+- 下载图片❌
 
 我还没想好怎么下载图片😓，也许app还有bug。
 
