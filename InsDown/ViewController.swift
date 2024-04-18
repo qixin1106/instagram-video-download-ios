@@ -15,6 +15,11 @@ import WebKit
     // Get the src value of the video tag js script
 private let findVideoSrcScript = """
         (function() {
+            var nodeList = document.querySelectorAll('video');
+            var videos = Array.from(nodeList)
+            if (videos.length > 1) {
+                
+            }
             var video = document.querySelector('video');
             if (video) {
                 return video.src;
@@ -26,14 +31,14 @@ private let findVideoSrcScript = """
 class ViewController: UIViewController, WKNavigationDelegate {
     
     var webView: WKWebView?
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         registerNotif()
         initWebViewUI()
     }
-    
-    
+        
         /// Register for event notifications
     private func registerNotif() {
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActiveNotification), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -73,12 +78,6 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
     
     
-        /// Adjust the layout of webview
-//    override func viewWillLayoutSubviews() {
-//        super.viewWillLayoutSubviews()
-//        self.webView?.frame = self.view.bounds
-//    }
-    
         /// Trigger to read the data in the clipboard. When the data obtained is a valid URL and the host is www.instagram.com, trigger the webview to load this URL.
     @objc private func didBecomeActiveNotification() {
         if let content = UIPasteboard.general.string {
@@ -99,31 +98,47 @@ class ViewController: UIViewController, WKNavigationDelegate {
         /// When the webview is loaded, trigger the js script to obtain the download URL of the video.
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
+                
         webView.evaluateJavaScript(findVideoSrcScript) { (result, error) in
             
             if let result = result as? String {
-                
+                debugPrint(result);
                 guard result.count > 0 else {
                     return
                 }
                 
-                QXAlertHelper.showProgressAlertWithVC(self)
-                QXVideoDownloader.videoDownload(url: result) { progress in
-                    
-                    QXAlertHelper.updateProgress(progress)
-                    
-                } downloadSuccess: { fileURL in
-                    
-                    debugPrint("video👌🏻:", fileURL)
-                    QXAlertHelper.hiddenProgressAlert()
-                    QXAlertHelper.showSaveSheet(self) {
-                        
-                        QXVideoSaveHelper.saveVideo(fileURL: fileURL)
-                        
-                    }
-                }
+                self.handleURLs(result)
+
             }
         }
+    }
+    
+    private func handleURLs(_ result: String) {
+        
+        QXAlertHelper.showProgressAlertWithVC(self)
+        QXVideoDownloader.videoDownload(url: result) { progress in
+            
+            QXAlertHelper.updateProgress(progress)
+            
+        } downloadSuccess: { fileURL in
+            
+            debugPrint("video👌🏻:", fileURL)
+            QXAlertHelper.hiddenProgressAlert()
+            QXAlertHelper.showSaveSheet(self) {
+                
+                QXVideoSaveHelper.saveVideo(fileURL: fileURL) { saved in
+                    
+                    QXVideoSaveHelper.removeCacheVideoFile(fileURL: fileURL)
+                    
+                }
+                
+            } cancelCallback: {
+                
+                QXVideoSaveHelper.removeCacheVideoFile(fileURL: fileURL)
+                
+            }
+        }
+         
     }
     
 }

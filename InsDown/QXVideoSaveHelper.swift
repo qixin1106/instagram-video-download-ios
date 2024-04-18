@@ -9,8 +9,10 @@ import Foundation
 import Photos
 
 class QXVideoSaveHelper {
+    
+    
         /// save into the album
-    static func saveVideo(fileURL: URL) {
+    static func saveVideo(fileURL: URL, finished: @escaping ((Bool) -> Void)) {
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: fileURL)
         }) { saved, error in
@@ -18,6 +20,20 @@ class QXVideoSaveHelper {
                 let alertText = "save👌🏻"
                 debugPrint(alertText)
             }
+            finished(saved)
+        }
+    }
+    
+    /// remove cache file
+    static func removeCacheVideoFile(fileURL: URL) {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return
+        }
+
+        do {
+            try FileManager.default.removeItem(at: fileURL)
+        } catch {
+            debugPrint(error)
         }
     }
 }

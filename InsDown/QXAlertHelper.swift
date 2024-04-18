@@ -40,7 +40,7 @@ class QXAlertHelper {
     
         /// 显示保存Sheet提示
         /// - Parameter showVC: 从这个vc弹出
-    static func showSaveSheet(_ showVC: UIViewController, saveCallback: @escaping (() -> Void)) {
+    static func showSaveSheet(_ showVC: UIViewController, saveCallback: @escaping (() -> Void), cancelCallback: @escaping (() -> Void)) {
         let saveAction = UIAlertAction(title: "Save👌🏻", style: .default) { action in
             
             saveCallback()
@@ -50,6 +50,8 @@ class QXAlertHelper {
         self.saveSheetController!.addAction(saveAction)
         let cancelAction = UIAlertAction(title: "Cancel❌", style: .cancel) { action in
             
+            cancelCallback()
+
         }
         self.saveSheetController!.addAction(cancelAction)
         showVC.present(self.saveSheetController!, animated: true, completion: nil)
